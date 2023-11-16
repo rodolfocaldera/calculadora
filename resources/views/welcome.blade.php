@@ -364,29 +364,57 @@
         function calculate(){
             const token = document.querySelector('[name="_token"]');
             let texto = formula();
-                let data = {
-                    texto
-                }
+            let data = {
+                texto
+            };
 
-                fetch(calculateUrl,{
-                    headers:{
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token.value
-                    },
-                    method:'POST',
-                    body: JSON.stringify(data)
-                }).then(response=>response.json())
-                .then((result)=>{
-                    if(typeof result.x != "undefined" && typeof result.y != "undefined"){
-                        let xResult = document.getElementById("x_result");
-                        let yResult = document.getElementById("y_result");
+            let x1 = parseFloat(texto.x1value.replace("x",""));
+            let x2 = parseFloat(texto.x2value.replace("x",""));
+            let y1 = parseFloat(texto.y1value.replace("y","")) * (texto.sign1value == "+" ? 1 : -1);
+            let y2 = parseFloat(texto.y2value.replace("y","")) * (texto.sign2value == "+" ? 1 : -1);
+            let valor1 = parseFloat(texto.valor1Value);
+            let valor2 = parseFloat(texto.valor2Value);
 
-                        xResult.innerHTML = "X = " + result.x;
-                        yResult.innerHTML = "Y = " + result.y;
-                    }else{
-                        alert("Something wrong!");
-                    }
-                })
+            let contrario = x2 * -1;
+
+            x1 = x1 * contrario;
+            y1 = y1 * contrario;
+            x2 = x2 * x1;
+            y2 = y2 * x1;
+            let x_res = x1 + x2;
+            let y_res = y1 + y2;
+
+            let x, y = 0;
+            if(x_res != 0){
+                x = valor1 / x_res;
+            }else{
+                contrario = y2 * -1;
+
+                x1 = x1 * contrario;
+                y1 = y1 * contrario;
+                x2 = x2 * y1;
+                y2 = y2 * y1;
+                let x_res = x1 + x2;
+                let y_res = y1 + y2;
+                x = valor1 / x_res;
+            }
+
+            if(y_res != 0){
+                y = valor2/ y_res;
+            }
+
+            xResult.innerHTML = "X = " + x;
+            yResult.innerHTML = "Y = " + y;
+
+            data.resultado = {x,y};
+            fetch(calculateUrl,{
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token.value
+                },
+                method:'POST',
+                body: JSON.stringify(data)
+            })
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

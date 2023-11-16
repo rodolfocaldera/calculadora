@@ -26,27 +26,9 @@ Route::post("/memory",function(Request $request){
 });
 
 Route::post("/calculate",function(Request $request){
-    $formula = $request->texto;
-    $x1 = floatval(str_replace("x","",$formula["x1value"]));
-    $x2 = floatval(str_replace("x","",$formula["x2value"])) * ($formula["sign1value"] == "+" ? 1 : -1);
-    $y1 = floatval(str_replace("y","",$formula["y1value"]));
-    $y2 = floatval(str_replace("y","",$formula["y2value"]))  * ($formula["sign2value"] == "+" ? 1 : -1);
-    $x_res = $x1 + $x2;
-    $y_res = $y1 + $y2;
-    $x=0;
-    $y=0;
-    if($x_res != 0){
-        $x = floatval($formula["valor1Value"])/$x_res;
-    }
-
-    if($y_res != 0){
-        $y = floatval($formula["valor2Value"])/$y_res;
-    }
 
     $registro  = new Registro();
-    $registro->texto = json_encode($formula);
-    $registro->resultado = json_encode(["x" => $x,"y"=>$y]);
+    $registro->texto = json_encode($request->texto);
+    $registro->resultado = json_encode($request->resultado);
     $registro->save();
-    
-    return response()->json(["x" => $x,"y"=>$y]);
 });
